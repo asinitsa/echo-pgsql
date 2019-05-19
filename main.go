@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"net/http"
 	"strconv"
 
@@ -57,7 +59,24 @@ func deleteUser(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
+type User struct {
+	gorm.Model
+	Neme        string
+	DateOfBirth string
+}
+
 func main() {
+
+	db, err := gorm.Open("sqlite3", "test.db")
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	defer db.Close()
+
+	// Migrate the schema (tables): User
+	db.AutoMigrate(&User{})
+
 	e := echo.New()
 
 	// Middleware
