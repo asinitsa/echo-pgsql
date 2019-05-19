@@ -12,7 +12,7 @@ services:
       POSTGRES_USER: user
     volumes:
       - /tmp/test:/var/lib/postgresql/data
-  widgetapi-test:
+  users_api:
     depends_on:
       - db
     build:
