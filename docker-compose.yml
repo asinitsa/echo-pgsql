@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:10.6
+    container_name: users_db
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: user
+      POSTGRES_USER: usr
+    volumes:
+      - /tmp/test:/var/lib/postgresql/data
+  widgetapi-test:
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: users_api
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://used:user@db:5432/user
