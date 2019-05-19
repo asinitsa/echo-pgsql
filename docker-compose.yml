@@ -9,7 +9,7 @@ services:
     restart: always
     environment:
       POSTGRES_PASSWORD: user
-      POSTGRES_USER: usr
+      POSTGRES_USER: user
     volumes:
       - /tmp/test:/var/lib/postgresql/data
   widgetapi-test:
