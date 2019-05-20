@@ -7,5 +7,5 @@ import (
 type User struct {
 	gorm.Model
 	Name        string `json:"name"`
-	DateOfBirth string `json:"date_of_b"`
+	DateOfBirth string `json:"DateOfBirth"`
 }

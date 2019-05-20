@@ -1,14 +1,12 @@
 package main
 
 import (
+	"./model"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"net/http"
-	"time"
-
-	"./model"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 func getUser(c echo.Context) error {
@@ -44,14 +42,13 @@ func putUser(c echo.Context) error {
 	}
 
 	u.Name = c.Param("name")
-	u.DateOfBirth = time.Now().String()
 
 	dbConn.NewRecord(u)
 	dbConn.Create(&u)
 	dbConn.NewRecord(u)
 
 	defer dbConn.Close()
-	return c.JSON(http.StatusOK, u)
+	return c.JSON(http.StatusOK, u.DateOfBirth)
 }
 
 func main() {
