@@ -2,7 +2,6 @@ package main
 
 import (
 	"./model"
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -18,17 +17,14 @@ func getUser(c echo.Context) error {
 
 	u.Name = c.Param("name")
 
-	DateOfBirth := model.GetDateOfBirthByName(*u)
-
-	return c.JSON(http.StatusOK, DateOfBirth)
+	if model.UserNotFoundByName(*u) {
+		return c.JSON(http.StatusOK, "User NOT found")
+	} else {
+		return c.JSON(http.StatusOK, model.GetDateOfBirthByName(*u))
+	}
 }
 
 func putUser(c echo.Context) error {
-
-	dbConn, err := gorm.Open("sqlite3", "gorm.db")
-	if err != nil {
-		panic("DB Connection Error")
-	}
 
 	u := new(model.User)
 	if err := c.Bind(u); err != nil {
@@ -37,11 +33,12 @@ func putUser(c echo.Context) error {
 
 	u.Name = c.Param("name")
 
-	dbConn.NewRecord(u)
-	dbConn.Create(&u)
-	dbConn.NewRecord(u)
+	if model.UserNotFoundByName(*u) {
+		model.CreateUserByName(*u)
+	} else {
+		model.UpdateUserDateOfBirth(*u)
+	}
 
-	defer dbConn.Close()
 	return c.JSON(http.StatusOK, u.DateOfBirth)
 }
 

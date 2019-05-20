@@ -11,30 +11,59 @@ type User struct {
 	DateOfBirth string `json:"DateOfBirth"`
 }
 
-// Comment
-func MigrateBD() error {
+func DbManager() *gorm.DB {
+
 	db, err := gorm.Open("sqlite3", "gorm.db")
 	if err != nil {
 		panic("DB Connection Error")
 	}
 
-	er := db.AutoMigrate(User{}).Error
+	return db
+}
 
-	defer db.Close()
+// Comment
+func MigrateBD() error {
 
-	return er
+	dbConn := DbManager()
+
+	return dbConn.AutoMigrate(User{}).Error
 }
 
 // Comment
 func GetDateOfBirthByName(u User) string {
-	dbConn, err := gorm.Open("sqlite3", "gorm.db")
-	if err != nil {
-		panic("DB Connection Error")
-	}
+
+	dbConn := DbManager()
 
 	dbConn.Where("name = ?", u.Name).First(&u)
 
-	defer dbConn.Close()
+	return u.DateOfBirth
+}
+
+// Comment
+func UserNotFoundByName(u User) bool {
+
+	dbConn := DbManager()
+
+	return dbConn.Where("name = ?", u.Name).First(&u).RecordNotFound()
+}
+
+// Comment
+func CreateUserByName(u User) bool {
+
+	dbConn := DbManager()
+
+	dbConn.NewRecord(u)
+	dbConn.Create(&u)
+
+	return dbConn.NewRecord(u)
+}
+
+// Comment
+func UpdateUserDateOfBirth(u User) string {
+
+	dbConn := DbManager()
+
+	dbConn.Model(&u).Update("DateOfBirth", u.DateOfBirth)
 
 	return u.DateOfBirth
 }
