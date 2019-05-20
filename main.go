@@ -2,80 +2,68 @@ package main
 
 import (
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"net/http"
-	"strconv"
-
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"net/http"
+	"time"
+
+	"./model"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
-
-type (
-	user struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}
-)
-
-var (
-	users = map[int]*user{}
-	seq   = 1
-)
-
-//----------
-// Handlers
-//----------
-
-func createUser(c echo.Context) error {
-	u := &user{
-		ID: seq,
-	}
-	if err := c.Bind(u); err != nil {
-		return err
-	}
-	users[u.ID] = u
-	seq++
-	return c.JSON(http.StatusCreated, u)
-}
 
 func getUser(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	return c.JSON(http.StatusOK, users[id])
-}
 
-func updateUser(c echo.Context) error {
-	u := new(user)
+	dbConn, err := gorm.Open("sqlite3", "gorm.db")
+	if err != nil {
+		panic("DB Connection Error")
+	}
+
+	u := new(model.User)
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	id, _ := strconv.Atoi(c.Param("id"))
-	users[id].Name = u.Name
-	return c.JSON(http.StatusOK, users[id])
+
+	name := c.Param("name")
+
+	dbConn.Where("name = ?", name).First(&u)
+
+	defer dbConn.Close()
+	return c.JSON(http.StatusOK, u)
 }
 
-func deleteUser(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	delete(users, id)
-	return c.NoContent(http.StatusNoContent)
-}
+func putUser(c echo.Context) error {
 
-type User struct {
-	gorm.Model
-	Neme        string
-	DateOfBirth string
+	dbConn, err := gorm.Open("sqlite3", "gorm.db")
+	if err != nil {
+		panic("DB Connection Error")
+	}
+
+	u := new(model.User)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+
+	u.Name = c.Param("name")
+	u.DateOfBirth = time.Now().String()
+
+	dbConn.NewRecord(u)
+	dbConn.Create(&u)
+	dbConn.NewRecord(u)
+
+	defer dbConn.Close()
+	return c.JSON(http.StatusOK, u)
 }
 
 func main() {
 
-	db, err := gorm.Open("sqlite3", "test.db")
+	db, err := gorm.Open("sqlite3", "gorm.db")
 	if err != nil {
-		panic("failed to connect database")
+		panic("DB Connection Error")
 	}
 
-	defer db.Close()
+	db.AutoMigrate(&model.User{})
 
-	// Migrate the schema (tables): User
-	db.AutoMigrate(&User{})
+	defer db.Close()
 
 	e := echo.New()
 
@@ -84,10 +72,8 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Routes
-	e.POST("/hello", createUser)
-	e.GET("/hello/:id", getUser)
-	e.PUT("/hello/:id", updateUser)
-	e.DELETE("/hello/:id", deleteUser)
+	e.GET("/hello/:name", getUser)
+	e.PUT("/hello/:name", putUser)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
