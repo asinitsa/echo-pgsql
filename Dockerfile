@@ -18,7 +18,7 @@ COPY . .
 RUN go get -d -v ./...
 
 # Build the executable to `/app`. Mark the build as statically linked.
-RUN CGO_ENABLED=0 go build -v -installsuffix 'static' -o /app/hello
+RUN CGO_ENABLED=0 go build main.go -v -installsuffix 'static' -o /app/hello
 
 EXPOSE 8080
 

@@ -11,22 +11,16 @@ import (
 
 func getUser(c echo.Context) error {
 
-	dbConn, err := gorm.Open("sqlite3", "gorm.db")
-	if err != nil {
-		panic("DB Connection Error")
-	}
-
 	u := new(model.User)
 	if err := c.Bind(u); err != nil {
 		return err
 	}
 
-	name := c.Param("name")
+	u.Name = c.Param("name")
 
-	dbConn.Where("name = ?", name).First(&u)
+	DateOfBirth := model.GetDateOfBirthByName(*u)
 
-	defer dbConn.Close()
-	return c.JSON(http.StatusOK, u)
+	return c.JSON(http.StatusOK, DateOfBirth)
 }
 
 func putUser(c echo.Context) error {
@@ -53,14 +47,10 @@ func putUser(c echo.Context) error {
 
 func main() {
 
-	db, err := gorm.Open("sqlite3", "gorm.db")
+	err := model.MigrateBD()
 	if err != nil {
-		panic("DB Connection Error")
+		panic("DB Migration Error")
 	}
-
-	db.AutoMigrate(&model.User{})
-
-	defer db.Close()
 
 	e := echo.New()
 
