@@ -63,7 +63,7 @@ func UpdateUserDateOfBirth(u User) string {
 
 	dbConn := DbManager()
 
-	dbConn.Model(&u).Update("DateOfBirth", u.DateOfBirth)
+	dbConn.Model(&u).Where("name = ?", u.Name).Update("DateOfBirth", u.DateOfBirth)
 
 	return u.DateOfBirth
 }
