@@ -13,7 +13,7 @@ type User struct {
 	DateOfBirth string `json:"DateOfBirth"`
 }
 
-func getPGConnetionStr() string {
+func getPGConnectionStr() string {
 
 	var pgHost string
 	var pgPort string
@@ -58,7 +58,7 @@ func getPGConnetionStr() string {
 func DbManager() *gorm.DB {
 
 	// db, err := gorm.Open("sqlite3", "gorm.db")
-	db, err := gorm.Open("postgres", getPGConnetionStr())
+	db, err := gorm.Open("postgres", getPGConnectionStr())
 	if err != nil {
 		fmt.Println(err)
 		panic("DB Connection Error")
