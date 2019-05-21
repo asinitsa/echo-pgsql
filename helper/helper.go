@@ -3,43 +3,70 @@ package helper
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"time"
 )
 
-// Comment
-func BirthDayToday(dateStrung string) bool {
+func dateFormatter(dateString string) (time.Time, time.Time) {
 
 	const layout = "2006-01-02"
 
-	now := time.Now()
-
-	t, err := time.Parse(layout, dateStrung)
+	currentDay, err := time.Parse(layout, time.Now().Format(layout))
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(t)
-	fmt.Println(now)
+	parsedDay, err := time.Parse(layout, dateString)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	return t.Month() == now.Month() && t.Day() == now.Day()
+	return currentDay, parsedDay
 }
 
 // Comment
-func BirthDayNotInThePast(dateStrung string) bool {
+func BirthDayToday(dateString string) bool {
 
-	const layout = "2006-01-02"
+	currentDay, wasBorn := dateFormatter(dateString)
 
-	now := time.Now()
+	return wasBorn.Month() == currentDay.Month() && wasBorn.Day() == currentDay.Day()
+}
 
-	t, err := time.Parse(layout, dateStrung)
-	if err != nil {
-		fmt.Println(err)
+// Comment
+func BirthDateInThePast(dateString string) bool {
+
+	currentDay, wasBorn := dateFormatter(dateString)
+
+	return currentDay.After(wasBorn)
+}
+
+// Comment
+func GetDaysBeforeBirthday(dateString string) string {
+
+	var diff float64
+	var wasBornMonthString string
+
+	currentDay, wasBorn := dateFormatter(dateString)
+
+	if int(wasBorn.Month()) <= 9 {
+		wasBornMonthString = "0" + strconv.Itoa(int(wasBorn.Month()))
+	} else {
+		wasBornMonthString = strconv.Itoa(int(wasBorn.Month()))
 	}
 
-	fmt.Println(t)
-	fmt.Println(now)
+	thisYearBirthdayDateString := strconv.Itoa(currentDay.Year()) + "-" + wasBornMonthString + "-" + strconv.Itoa(wasBorn.Day())
+	nextYearBirthdayDateString := strconv.Itoa(currentDay.Year()+1) + "-" + wasBornMonthString + "-" + strconv.Itoa(wasBorn.Day())
 
-	return t.Year() == now.Year() && t.Month() == now.Month() && t.Day() == now.Day()
+	_, thisYearBirthdayDate := dateFormatter(thisYearBirthdayDateString)
+	_, nextYearBirthdayDate := dateFormatter(nextYearBirthdayDateString)
+
+	if currentDay.Before(thisYearBirthdayDate) {
+		diff = thisYearBirthdayDate.Sub(currentDay).Hours()
+	} else {
+		diff = nextYearBirthdayDate.Sub(currentDay).Hours()
+	}
+
+	return strconv.FormatFloat(diff/24, 'f', 0, 64)
 }
 
 // Comment

@@ -30,7 +30,9 @@ func getUser(c echo.Context) error {
 		return c.JSON(http.StatusOK, "Hello "+u.Name+"! Happy birthday!")
 	}
 
-	return c.JSON(http.StatusOK, "Your birthday is in N days(s)")
+	N := helper.GetDaysBeforeBirthday(model.GetDateOfBirthByName(*u))
+
+	return c.JSON(http.StatusOK, "Your birthday is in "+N+" days(s) "+model.GetDateOfBirthByName(*u))
 }
 
 func putUser(c echo.Context) error {
@@ -46,7 +48,7 @@ func putUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Username must contain only letters!")
 	}
 
-	if helper.BirthDayNotInThePast(u.DateOfBirth) {
+	if !helper.BirthDateInThePast(u.DateOfBirth) {
 		return c.JSON(http.StatusBadRequest, "Birthday date must be in the past!")
 	}
 
