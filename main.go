@@ -24,9 +24,13 @@ func getUser(c echo.Context) error {
 
 	if model.UserNotFoundByName(*u) {
 		return c.JSON(http.StatusNotFound, "Username NOT found")
-	} else {
-		return c.JSON(http.StatusOK, model.GetDateOfBirthByName(*u))
 	}
+
+	if helper.BirthDayToday(model.GetDateOfBirthByName(*u)) {
+		return c.JSON(http.StatusOK, "Hello "+u.Name+"! Happy birthday!")
+	}
+
+	return c.JSON(http.StatusOK, "Your birthday is in N days(s)")
 }
 
 func putUser(c echo.Context) error {
@@ -42,13 +46,17 @@ func putUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Username must contain only letters!")
 	}
 
+	if helper.BirthDayNotInThePast(u.DateOfBirth) {
+		return c.JSON(http.StatusBadRequest, "Birthday date must be in the past!")
+	}
+
 	if model.UserNotFoundByName(*u) {
 		model.CreateUserByName(*u)
 	} else {
 		model.UpdateUserDateOfBirth(*u)
 	}
 
-	return c.JSON(http.StatusOK, u.DateOfBirth)
+	return c.JSON(http.StatusNoContent, "OK")
 }
 
 func main() {
