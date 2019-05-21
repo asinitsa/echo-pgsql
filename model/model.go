@@ -1,8 +1,10 @@
 package model
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"os"
 )
 
 type User struct {
@@ -11,10 +13,54 @@ type User struct {
 	DateOfBirth string `json:"DateOfBirth"`
 }
 
+func getPGConnetionStr() string {
+
+	var pgHost string
+	var pgPort string
+	var pgUser string
+	var pgDb string
+	var pgPw string
+
+	if len(os.Getenv("DATABASE_HOST")) == 0 {
+		pgHost = "db"
+	} else {
+		pgHost = os.Getenv("DATABASE_HOST")
+	}
+
+	if len(os.Getenv("DATABASE_PORT")) == 0 {
+		pgPort = "5432"
+	} else {
+		pgPort = os.Getenv("DATABASE_PORT")
+	}
+
+	if len(os.Getenv("DATABASE_USER")) == 0 {
+		pgUser = "user"
+	} else {
+		pgUser = os.Getenv("DATABASE_USER")
+	}
+
+	if len(os.Getenv("DATABASE_DBNAME")) == 0 {
+		pgDb = "user"
+	} else {
+		pgDb = os.Getenv("DATABASE_DBNAME")
+	}
+
+	if len(os.Getenv("DATABASE_PASSWORD")) == 0 {
+		pgPw = "user"
+	} else {
+		pgPw = os.Getenv("DATABASE_PASSWORD")
+	}
+
+	return "host=" + pgHost + " port=" + pgPort + " user=" + pgUser + " dbname=" + pgDb + " password=" + pgPw + " sslmode=disable"
+
+}
+
 func DbManager() *gorm.DB {
 
-	db, err := gorm.Open("sqlite3", "gorm.db")
+	// db, err := gorm.Open("sqlite3", "gorm.db")
+	db, err := gorm.Open("postgres", getPGConnetionStr())
 	if err != nil {
+		fmt.Println(err)
 		panic("DB Connection Error")
 	}
 
