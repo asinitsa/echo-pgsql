@@ -10,3 +10,5 @@ Content-Type: application/json
 ###
 
 curl -H 'Content-Type: application/json' -X PUT -d '{ "DateOfBirth": "1986-12-17" }' localhost:8080/hello/tttem | jq .
+
+curl -X GET -v localhost:8080/hello/tttrm | jq .
