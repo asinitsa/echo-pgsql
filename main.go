@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./helper"
-	"./model"
+	"github.com/asinitsa/echo-pgsql/helper"
+	"github.com/asinitsa/echo-pgsql/model"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
