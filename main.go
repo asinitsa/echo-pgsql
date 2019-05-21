@@ -48,6 +48,10 @@ func putUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Username must contain only letters!")
 	}
 
+	if !helper.BirthDateValid(u.DateOfBirth) {
+		return c.JSON(http.StatusBadRequest, "DateOfBirth must be formatted: { 'DateOfBirth': 'YYYY-MM-DD' }")
+	}
+
 	if !helper.BirthDateInThePast(u.DateOfBirth) {
 		return c.JSON(http.StatusBadRequest, "Birthday date must be in the past!")
 	}

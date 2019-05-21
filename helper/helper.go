@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func dateFormatter(dateString string) (time.Time, time.Time) {
+func dateParser(dateString string) (time.Time, time.Time) {
 
 	const layout = "2006-01-02"
 
@@ -27,7 +27,7 @@ func dateFormatter(dateString string) (time.Time, time.Time) {
 // Comment
 func BirthDayToday(dateString string) bool {
 
-	currentDay, wasBorn := dateFormatter(dateString)
+	currentDay, wasBorn := dateParser(dateString)
 
 	return wasBorn.Month() == currentDay.Month() && wasBorn.Day() == currentDay.Day()
 }
@@ -35,7 +35,7 @@ func BirthDayToday(dateString string) bool {
 // Comment
 func BirthDateInThePast(dateString string) bool {
 
-	currentDay, wasBorn := dateFormatter(dateString)
+	currentDay, wasBorn := dateParser(dateString)
 
 	return currentDay.After(wasBorn)
 }
@@ -46,7 +46,7 @@ func GetDaysBeforeBirthday(dateString string) string {
 	var diff float64
 	var wasBornMonthString string
 
-	currentDay, wasBorn := dateFormatter(dateString)
+	currentDay, wasBorn := dateParser(dateString)
 
 	if int(wasBorn.Month()) <= 9 {
 		wasBornMonthString = "0" + strconv.Itoa(int(wasBorn.Month()))
@@ -57,8 +57,8 @@ func GetDaysBeforeBirthday(dateString string) string {
 	thisYearBirthdayDateString := strconv.Itoa(currentDay.Year()) + "-" + wasBornMonthString + "-" + strconv.Itoa(wasBorn.Day())
 	nextYearBirthdayDateString := strconv.Itoa(currentDay.Year()+1) + "-" + wasBornMonthString + "-" + strconv.Itoa(wasBorn.Day())
 
-	_, thisYearBirthdayDate := dateFormatter(thisYearBirthdayDateString)
-	_, nextYearBirthdayDate := dateFormatter(nextYearBirthdayDateString)
+	_, thisYearBirthdayDate := dateParser(thisYearBirthdayDateString)
+	_, nextYearBirthdayDate := dateParser(nextYearBirthdayDateString)
 
 	if currentDay.Before(thisYearBirthdayDate) {
 		diff = thisYearBirthdayDate.Sub(currentDay).Hours()
@@ -78,4 +78,25 @@ func NameValid(name string) bool {
 	}
 
 	return matched
+}
+
+func BirthDateValid(dateString string) bool {
+
+	const layout = "2006-01-02"
+
+	var parsed bool
+
+	_, err := time.Parse(layout, dateString)
+	if err != nil {
+		parsed = false
+	} else {
+		parsed = true
+	}
+
+	matched, err := regexp.MatchString(`(^[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}$)`, dateString)
+	if err != nil {
+		matched = false
+	}
+
+	return matched && parsed
 }
