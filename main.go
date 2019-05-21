@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./helper"
 	"./model"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/labstack/echo"
@@ -15,10 +16,14 @@ func getUser(c echo.Context) error {
 		return err
 	}
 
-	u.Name = c.Param("name")
+	if helper.NameValid(c.Param("name")) {
+		u.Name = c.Param("name")
+	} else {
+		return c.JSON(http.StatusBadRequest, "Username must contain only letters")
+	}
 
 	if model.UserNotFoundByName(*u) {
-		return c.JSON(http.StatusOK, "User NOT found")
+		return c.JSON(http.StatusNotFound, "Username NOT found")
 	} else {
 		return c.JSON(http.StatusOK, model.GetDateOfBirthByName(*u))
 	}
@@ -31,7 +36,11 @@ func putUser(c echo.Context) error {
 		return err
 	}
 
-	u.Name = c.Param("name")
+	if helper.NameValid(c.Param("name")) {
+		u.Name = c.Param("name")
+	} else {
+		return c.JSON(http.StatusBadRequest, "Username must contain only letters!")
+	}
 
 	if model.UserNotFoundByName(*u) {
 		model.CreateUserByName(*u)
