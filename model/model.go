@@ -29,7 +29,7 @@ func MigrateBD() error {
 	return dbConn.AutoMigrate(User{}).Error
 }
 
-// Comment
+// Finding date of birth by username
 func GetDateOfBirthByName(u User) string {
 
 	dbConn := DbManager()
@@ -39,7 +39,7 @@ func GetDateOfBirthByName(u User) string {
 	return u.DateOfBirth
 }
 
-// Comment
+// Check if user exists
 func UserNotFoundByName(u User) bool {
 
 	dbConn := DbManager()
@@ -47,7 +47,7 @@ func UserNotFoundByName(u User) bool {
 	return dbConn.Where("name = ?", u.Name).First(&u).RecordNotFound()
 }
 
-// Comment
+// Creates new user with uniq ID
 func CreateUserByName(u User) bool {
 
 	dbConn := DbManager()
@@ -58,7 +58,7 @@ func CreateUserByName(u User) bool {
 	return dbConn.NewRecord(u)
 }
 
-// Comment
+//Updates user's data of birth
 func UpdateUserDateOfBirth(u User) string {
 
 	dbConn := DbManager()
