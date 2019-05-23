@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'Regisrty for Docker inmages in AWS'
+
+Resources:
+  EchoPgsqlRepository:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "echo-pgsql"
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Sid: AllowPushPull
+            Effect: Allow
+            Principal:
+              AWS:
+                - "arn:aws:iam::447446761662:root"
+              Service:
+                - "codebuild.amazonaws.com"
+            Action:
+              - "ecr:*"
