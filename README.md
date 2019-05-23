@@ -7,21 +7,23 @@
 
 ### Create K8s cluster AWS EKS (order of commands is important): 
 
-* Create VPC
-```$xslt
-aws --region us-east-2  cloudformation create-stack --capabilities CAPABILITY_IAM --stack-name vpc --template-body file://${PWD}/cloudformation/vpc.yml
-
-```
-
 * Create Kubernetes cluster
 ```$xslt
-aws --region us-east-2  cloudformation create-stack --capabilities CAPABILITY_IAM --stack-name eks --template-body file://${PWD}/cloudformation/eks.yml
-
+eksctl create cluster \
+--name prod \
+--version 1.12 \
+--nodegroup-name standard-workers \
+--node-type t3.medium \
+--nodes 3 \
+--nodes-min 1 \
+--nodes-max 4 \
+--node-ami auto
+--region us-east-2
 ```
 
 * Configure Kubernetes commandline 
 ```$xslt
-aws eks --region us-east-2 update-kubeconfig --name dev
+aws eks --region us-east-2 update-kubeconfig --name prod
 
 ```
 
@@ -46,18 +48,4 @@ docker build -t echo-pgsql .
 docker tag echo-pgsql:latest 447446761662.dkr.ecr.us-east-2.amazonaws.com/echo-pgsql:latest
 
 docker push 447446761662.dkr.ecr.us-east-2.amazonaws.com/echo-pgsql:latest
-```
-
-* Run Kubernetes workers nodes
-```$xslt
-eksctl create nodegroup \
---cluster dev \
---version auto \
---name standard-workers \
---node-type t3.medium \
---node-ami auto \
---nodes 3 \
---nodes-min 1 \
---nodes-max 4 \
---region us-east-2
 ```
