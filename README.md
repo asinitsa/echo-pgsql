@@ -48,3 +48,16 @@ docker tag echo-pgsql:latest 447446761662.dkr.ecr.us-east-2.amazonaws.com/echo-p
 docker push 447446761662.dkr.ecr.us-east-2.amazonaws.com/echo-pgsql:latest
 ```
 
+* Run Kubernetes workers nodes
+```$xslt
+eksctl create nodegroup \
+--cluster dev \
+--version auto \
+--name standard-workers \
+--node-type t3.medium \
+--node-ami auto \
+--nodes 3 \
+--nodes-min 1 \
+--nodes-max 4 \
+--region us-east-2
+```
