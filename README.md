@@ -21,12 +21,6 @@ eksctl create cluster \
 --region us-east-2
 ```
 
-* Configure Kubernetes commandline 
-```$xslt
-aws eks --region us-east-2 update-kubeconfig --name prod
-
-```
-
 * Check if Kubernetes commandline configured properly 
 ```$xslt
 $ kubectl get svc
