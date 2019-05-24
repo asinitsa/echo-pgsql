@@ -21,6 +21,20 @@ eksctl create cluster \
 --region us-east-2
 ```
 
+* Add worker nodes to Kubernetes cluster
+```$xslt
+eksctl create nodegroup \
+--cluster prod \
+--version auto \
+--name standard-workers \
+--node-type t3.medium \
+--node-ami auto \
+--nodes 3 \
+--nodes-min 1 \
+--nodes-max 4 \
+--region us-east-2
+```
+
 * Check if Kubernetes commandline configured properly 
 ```$xslt
 $ kubectl get svc
@@ -51,7 +65,7 @@ docker push 447446761662.dkr.ecr.us-east-2.amazonaws.com/echo-pgsql:latest
 
 * Check if application is up-and-running 
 ```.env
-curl -H 'Content-Type: application/json' -X PUT -d '{ "DateOfBirth": "1986-12-17" }' http://a3a7dbfc67e0b11e9a2f30a4b37e3ea9-170663120.us-east-2.elb.amazonaws.com/hello/tttem | jq .
+curl -H 'Content-Type: application/json' -X PUT -d '{ "DateOfBirth": "1986-12-17" }' http://a0315e5617e5f11e9a2f30a4b37e3ea9-1659244178.us-east-2.elb.amazonaws.com/hello/tttem | jq .
 
-curl -X GET -v http://a3a7dbfc67e0b11e9a2f30a4b37e3ea9-170663120.us-east-2.elb.amazonaws.com/hello/tttem | jq .
+http://a0315e5617e5f11e9a2f30a4b37e3ea9-1659244178.us-east-2.elb.amazonaws.com/hello/tttem
 ```
