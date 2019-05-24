@@ -67,6 +67,8 @@ docker push 447446761662.dkr.ecr.us-east-2.amazonaws.com/echo-pgsql:latest
 
 [GET](http://a0315e5617e5f11e9a2f30a4b37e3ea9-1659244178.us-east-2.elb.amazonaws.com/hello/tttem)
 
+PUT:
+
 ```.env
 curl -H 'Content-Type: application/json' -X PUT -d '{ "DateOfBirth": "1986-12-17" }' http://a0315e5617e5f11e9a2f30a4b37e3ea9-1659244178.us-east-2.elb.amazonaws.com/hello/tttem | jq .
 ```
