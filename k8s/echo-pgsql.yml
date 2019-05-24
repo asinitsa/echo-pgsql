@@ -42,15 +42,16 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pgsql
+      app: 'pgsql'
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: pgsql
-        failure-domain.beta.kubernetes.io/zone: us-east-2a
+        app: 'pgsql'
     spec:
+      nodeSelector:
+        failure-domain.beta.kubernetes.io/zone: 'us-east-2a'
       containers:
         - image: postgres:10.6
           name: postgres

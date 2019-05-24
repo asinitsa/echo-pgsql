@@ -43,3 +43,15 @@ docker tag echo-pgsql:latest 447446761662.dkr.ecr.us-east-2.amazonaws.com/echo-p
 
 docker push 447446761662.dkr.ecr.us-east-2.amazonaws.com/echo-pgsql:latest
 ```
+
+* Deploy application and database 
+```.env
+ kubectl apply -f k8s/echo-pgsql.yml 
+```
+
+* Check if application is up-and-running 
+```.env
+curl -H 'Content-Type: application/json' -X PUT -d '{ "DateOfBirth": "1986-12-17" }' http://a3a7dbfc67e0b11e9a2f30a4b37e3ea9-170663120.us-east-2.elb.amazonaws.com/hello/tttem | jq .
+
+curl -X GET -v http://a3a7dbfc67e0b11e9a2f30a4b37e3ea9-170663120.us-east-2.elb.amazonaws.com/hello/tttem | jq .
+```
