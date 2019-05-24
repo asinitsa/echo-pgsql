@@ -23,15 +23,15 @@ spec:
               name: echopgsql8080
           env:
             - name: DATABASE_HOST
-              value: pgsql
+              value: 'pgsql'
             - name: DATABASE_PORT
-              value: 5432
+              value: '5432'
             - name: DATABASE_USER
-              value: user
+              value: 'user'
             - name: DATABASE_PASSWORD
-              value: user
+              value: 'user'
             - name: DATABASE_DBNAME
-              value: user
+              value: 'user'
 
 ---
 apiVersion: apps/v1
@@ -49,6 +49,7 @@ spec:
     metadata:
       labels:
         app: pgsql
+        failure-domain.beta.kubernetes.io/zone: us-east-2a
     spec:
       containers:
         - image: postgres:10.6
@@ -56,21 +57,21 @@ spec:
           imagePullPolicy: Always
           env:
             - name: POSTGRES_PASSWORD
-              value: user
+              value: 'user'
             - name: POSTGRES_USER
-              value: user
+              value: 'user'
             - name: PGDATA
-              value: /var/lib/postgresql/data/widgetapi/
+              value: '/var/lib/postgresql/data/widgetapi/'
           ports:
             - containerPort: 5432
               name: postgres5432
           volumeMounts:
             - name: postgres-persistent-storage
-              mountPath: /var/lib/postgresql/data
+              mountPath: '/var/lib/postgresql/data'
       volumes:
         - name: postgres-persistent-storage
           awsElasticBlockStore:
-            volumeID: vol-090ff07d80720c213 # must be created before deployment
+            volumeID: vol-091dcdd7405f8945b # must be created before deployment
             fsType: ext4
 
 ---
@@ -86,3 +87,18 @@ spec:
       protocol: TCP
   selector:
     app: pgsql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-ext
+  labels:
+    app: echo
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: echo
